@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>cn.mintimate</groupId>
-    <artifactId>bugmaker</artifactId>
+    <artifactId>log4j2-bugmaker</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>bugmaker</name>
-    <description>CVE-2021-44228 Log4Shell Demo</description>
+    <name>log4j2-bugmaker</name>
+    <description>CVE-2021-44228 Log4Shell Vulnerability Demo Project</description>
     <url/>
     <licenses>
         <license/>

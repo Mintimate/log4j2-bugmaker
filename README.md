@@ -1,4 +1,6 @@
-# CVE-2021-44228 Log4Shell 漏洞演示
+# Log4j2-BugMaker
+
+## CVE-2021-44228 Log4Shell 漏洞演示项目
 
 这是一个用于学习和研究 Log4j2 远程代码执行漏洞（Log4Shell）的演示项目。
 
@@ -31,7 +33,7 @@
 或者：
 
 ```bash
-java -jar target/bugmaker-0.0.1-SNAPSHOT.jar
+java -jar target/log4j2-bugmaker-0.0.1-SNAPSHOT.jar
 ```
 
 ### 3. 访问应用
