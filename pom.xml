@@ -13,9 +13,13 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>log4j2-bugmaker</name>
     <description>CVE-2021-44228 Log4Shell Vulnerability Demo Project</description>
-    <url/>
+    <url>https://github.com/Mintimate/log4j2-bugmaker</url>
     <licenses>
-        <license/>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
     </licenses>
     <developers>
         <developer/>

